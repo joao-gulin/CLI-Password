@@ -36,8 +36,13 @@ const generatePassword = (length: number) => {
 program
   .name('password-manager')
   .description('Initialize the password storage directory.')
+  .version('1.0.0')
+
+program
+  .command('init')
+  .description('Initialize the password storage directory.')
   .action(async () => {
-    await fs.mkdir(passwordsDir, { recursive: true })
+    await fs.mkdir(passwordDir, { recursive: true })
     console.log(chalk.green('Password storage initialized.'))
   })
 program.parse()
