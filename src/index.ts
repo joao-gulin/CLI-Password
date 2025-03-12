@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import { randomBytes, createCipheriv, createDecipheriv } from 'crypto'
 import { promises as fs } from 'fs'
 import { join } from 'path'
+import { password } from 'bun'
 
 const program = new Command()
 const passwordDir = join(process.cwd(), 'passwords')
@@ -17,10 +18,26 @@ const encrypt = (text: string) => {
   return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
 }
 
-console.log(figlet.textSync("Pass Generator"))
+const decrypt = (hash: string) => {
+  const [ivHex, encryptedHex] = hash.split(':')
+  const decipher = createDecipheriv(algorithm, secretKey, Buffer.from(ivHex, 'hex'))
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(encryptedHex, 'hex')),
+    decipher.final(),
+  ])
+  return decrypted.toString()
+}
+
+const generatePassword = (length: number) => {
+  return randomBytes(length).toString('base64').slice(0, length)
+}
+
 
 program
-  .version("1.0.0")
-  .description("An example CLI for managing passwords and creating them")
-
+  .name('password-manager')
+  .description('Initialize the password storage directory.')
+  .action(async () => {
+    await fs.mkdir(passwordsDir, { recursive: true })
+    console.log(chalk.green('Password storage initialized.'))
+  })
 program.parse()
