@@ -1,0 +1,17 @@
+{
+  "name": "password-generator",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@types/node": "^22.13.10",
+    "commander": "^13.1.0",
+    "figlet": "^1.8.0"
+  }
+}
