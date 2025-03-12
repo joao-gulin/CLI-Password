@@ -3,7 +3,7 @@ import figlet from 'figlet'
 import chalk from 'chalk'
 import { randomBytes, createCipheriv, createDecipheriv } from 'crypto'
 import { promises as fs } from 'fs'
-import { join } from 'path'
+import { join, parse } from 'path'
 import { password } from 'bun'
 
 const program = new Command()
@@ -45,4 +45,19 @@ program
     await fs.mkdir(passwordDir, { recursive: true })
     console.log(chalk.green('Password storage initialized.'))
   })
-program.parse()
+
+program
+  .command('generate <name>')
+  .description('Generate a new passwrod and store it')
+  .option('-l, --length <number>', 'Length of the password', '16')
+  .action(async (name, options) => {
+    const length = parseInt(options.length, 10)
+    const password = generatePassword(length)
+    const encryptedPassword = encrypt(password)
+    const filePath = join(passwordDir, `${name}.txt`)
+    await fs.writeFile(filePath, encryptedPassword)
+    console.log(chalk.blue(`Password for ${name} generated and stored.`))
+  })
+
+console.log(chalk.cyan(figlet.textSync('Password Manager')))
+program.parse(process.argv)
